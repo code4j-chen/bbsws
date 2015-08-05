@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
+	xmlns:tns="http://ws.bbsws.org/" targetNamespace="http://ws.bbsws.org/"
+	version="1.0">
+
+	<xs:element name="BBSWSException" type="tns:BBSWSException" />
+
+	<xs:element name="findById" type="tns:findById" />
+
+	<xs:element name="findByIdResponse" type="tns:findByIdResponse" />
+
+	<xs:complexType name="findById">
+		<xs:sequence>
+			<xs:element minOccurs="0" name="arg0" type="xs:string" />
+		</xs:sequence>
+	</xs:complexType>
+
+	<xs:complexType name="findByIdResponse">
+		<xs:sequence>
+			<xs:element minOccurs="0" name="return" type="tns:configVO" />
+		</xs:sequence>
+	</xs:complexType>
+
+	<xs:complexType name="configVO">
+		<xs:sequence>
+			<xs:element minOccurs="0" name="confContext"
+				type="xs:string" />
+			<xs:element minOccurs="0" name="ID" type="xs:string" />
+		</xs:sequence>
+	</xs:complexType>
+
+	<xs:complexType name="BBSWSException">
+		<xs:sequence>
+			<xs:element minOccurs="0" name="message" type="xs:string" />
+		</xs:sequence>
+	</xs:complexType>
+</xs:schema>

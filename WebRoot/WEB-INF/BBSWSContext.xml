@@ -1,0 +1,132 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:tx="http://www.springframework.org/schema/tx"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd
+                http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-2.0.xsd">
+
+	<!-- 指定属性文件存放的位置 -->
+	<bean name="placeholderConfig"
+		class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+		<property name="location">
+			<value>classpath:init.properties</value>
+		</property>
+	</bean>
+
+	<!-- 配置dataSource Bean	 -->
+	<bean id="dataSource"
+		class="com.mchange.v2.c3p0.ComboPooledDataSource"
+		destroy-method="close">
+		<property name="driverClass">
+			<value>${datasource.driverClassName}</value>
+		</property>
+		<property name="jdbcUrl">
+			<value>${datasource.url}</value>
+		</property>
+		<property name="user">
+			<value>${datasource.username}</value>
+		</property>
+		<property name="password">
+			<value>${datasource.password}</value>
+		</property>
+		<!-- 设置连接池的最大容量 -->
+		<property name="maxPoolSize">
+			<value>${datasource.maxPoolSize}</value>
+		</property>
+		<!-- 设置连接池的最小容量 -->
+		<property name="minPoolSize">
+			<value>${datasource.minPoolSize}</value>
+		</property>
+		<!-- 设置连接池的初始容量  -->
+		<property name="initialPoolSize">
+			<value>${datasource.initialPoolSize}</value>
+		</property>
+		<!-- 设置最大空闲时间 -->
+		<property name="maxIdleTime">
+			<value>${datasource.maxIdleTime}</value>
+		</property>
+	</bean>
+
+	<!-- 配置sessionFactory -->
+	<bean id="sessionFactory"
+		class="org.springframework.orm.hibernate3.LocalSessionFactoryBean">
+		<!-- 指定sessionFactory的dataSource  -->
+		<property name="dataSource">
+			<ref bean="dataSource" />
+		</property>
+		<!-- 指定映射文件所在的位置 -->
+		<property name="mappingResources">
+			<list>
+				<value>org/bbsws/po/ConfigPO.hbm.xml</value>
+			</list>
+		</property>
+		<!-- 配置hibernate的属性 -->
+		<property name="hibernateProperties">
+			<props>
+				<!-- 配置hibernate的数据库方言  -->
+				<prop key="hibernate.dialect">
+					${hibernate.dialect}
+				</prop>
+				<!-- 是否在显示hibernate在运行过程中产生的SQL语句-->
+				<prop key="hibernate.show_sql">
+					${hibernate.show_sql}
+				</prop>
+				<!-- 是否根据映射建表  -->
+				<prop key="hibernate.hbm2ddl.auto">
+					${hibernate.hbm2ddl.auto}
+				</prop>
+				<!-- 配置hibernate的批处理量 -->
+				<prop key="mysql.jdbc.batch_size">
+					${mysql.jdbc.batch_size}
+				</prop>
+				<!-- 添加二级缓存的支持 -->
+				<prop key="hibernate.cache.use_second_level_cache">
+					${hibernate.cache.use_second_level_cache}
+				</prop>
+				<!-- 添加对查询缓存的支持 -->
+				<prop key="hibernate.cache.use_query_cache">
+					${hibernate.cache.use_query_cache}
+				</prop>
+				<!-- 指定第三方提供商 -->
+				<prop key="hibernate.cache.provider_class">
+					${hibernate.cache.provider_class}
+				</prop>
+				<!-- 指定ehcache.xml文件的位置 -->
+				<prop
+					key="hibernate.cache.provider_configuration_file_resource_path">
+					${hibernate.cache.provider_configuration_file_resource_path}
+				</prop>
+			</props>
+		</property>
+	</bean>
+
+	<!-- 配置DAO模板,通过abstract属性阻止容器初始化该模板Bean -->
+	<bean name="daoTemplate" abstract="true">
+		<property name="sessionFactory" ref="sessionFactory" />
+	</bean>
+
+	<!-- 配置事务管理器,使用Hibernate局部事务管理器策略 -->
+	<bean id="transactionManager"
+		class="org.springframework.orm.hibernate3.HibernateTransactionManager">
+		<property name="sessionFactory" ref="sessionFactory" />
+	</bean>
+
+	<!-- 配置事务拦截器 -->
+	<bean id="transactionInterceptor"
+		class="org.springframework.transaction.interceptor.TransactionInterceptor">
+		<!-- 事务拦截器bean需要依赖注入一个事务管理器 -->
+		<property name="transactionManager" ref="transactionManager" />
+		<!-- 定义事务传播属性 -->
+		<property name="transactionAttributes">
+			<!-- 下面定义事务传播属性 -->
+			<props>
+				<prop key="insert*">PROPAGATION_REQUIRED</prop>
+				<prop key="update*">PROPAGATION_REQUIRED</prop>
+				<prop key="delete*">PROPAGATION_REQUIRED</prop>
+				<prop key="*">PROPAGATION_REQUIRED,readOnly</prop>
+			</props>
+		</property>
+	</bean>
+
+	<import resource="BBSWSConfigContext.xml" />
+</beans>

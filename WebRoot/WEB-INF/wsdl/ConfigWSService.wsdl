@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<definitions xmlns="http://schemas.xmlsoap.org/wsdl/"
+	xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/"
+	xmlns:tns="http://ws.bbsws.org/"
+	xmlns:wsu="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-utility-1.0.xsd"
+	xmlns:xsd="http://www.w3.org/2001/XMLSchema" name="ConfigWSService"
+	targetNamespace="http://ws.bbsws.org/">
+	<types>
+		<xsd:schema>
+			<xsd:import namespace="http://ws.bbsws.org/"
+				schemaLocation="ConfigWSService_schema1.xsd" />
+		</xsd:schema>
+	</types>
+	<message name="findById">
+		<part element="tns:findById" name="parameters" />
+	</message>
+	<message name="findByIdResponse">
+		<part element="tns:findByIdResponse" name="parameters" />
+	</message>
+	<message name="BBSWSException">
+		<part element="tns:BBSWSException" name="fault" />
+	</message>
+	<portType name="ConfigWSDelegate">
+		<operation name="findById">
+			<input message="tns:findById" />
+			<output message="tns:findByIdResponse" />
+			<fault message="tns:BBSWSException" name="BBSWSException" />
+		</operation>
+	</portType>
+	<binding name="ConfigWSPortBinding" type="tns:ConfigWSDelegate">
+		<soap:binding style="document"
+			transport="http://schemas.xmlsoap.org/soap/http" />
+		<operation name="findById">
+			<soap:operation soapAction="" />
+			<input>
+				<soap:body use="literal" />
+			</input>
+			<output>
+				<soap:body use="literal" />
+			</output>
+			<fault name="BBSWSException">
+				<soap:fault name="BBSWSException" use="literal" />
+			</fault>
+		</operation>
+	</binding>
+	<service name="ConfigWSService">
+		<port binding="tns:ConfigWSPortBinding" name="ConfigWSPort">
+			<soap:address
+				location="http://localhost:8080/bbsws/ConfigWSPort" />
+		</port>
+	</service>
+</definitions>
